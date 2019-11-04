@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<manifest>
+  <control namespace="Auxilion" constructor="AzureMapCluststerSpider" version="0.0.1" display-name-key="AzureMapCluststerSpider" description-key="AzureMapCluststerSpider description" control-type="standard">
+    <!-- dataset node represents a set of entity records on CDS; allow more than one datasets -->
+    <data-set name="dataSet" display-name-key="Dataset_Display_Key">
+    </data-set>
+    <property name="AzureMapsSubsctiptionKey" display-name-key="AzureMapsSubsctiptionKey_Display_Key" description-key="AzureMapsSubsctiptionKey_Desc_Key" of-type="SingleLine.Text" usage="input" required="true" default-value="YourAzureMapsSubscriptionKey" />
+    <property name="primaryFieldName" display-name-key="primaryFieldName_Display_Key" description-key="primaryFieldName_Desc_Key" of-type="SingleLine.Text" usage="input" required="true"  default-value="aux_name"/>
+    <property name="latFieldName" display-name-key="latFieldName_Display_Key" description-key="latFieldName_Desc_Key" of-type="SingleLine.Text" usage="input" required="true"  default-value="aux_latitude"/>
+    <property name="longFieldName" display-name-key="longFieldName_Display_Key" description-key="longFieldName_Desc_Key" of-type="SingleLine.Text" usage="input" required="true" default-value="aux_longitude"/>
+    <property name="zoomName" display-name-key="zoom_Display_Key" description-key="zoom_Desc_Key" of-type="Whole.None" usage="input" required="true" default-value="8"/>
+    <property name="maxMarkersInSpiderName" display-name-key="zoom_Display_Key" description-key="zoom_Desc_Key" of-type="Whole.None" usage="input" required="true" default-value="20"/>
+
+    <resources>
+      <code path="index.ts" order="1"/>
+      <css path="atlas.min.css" order="3" />
+      <css path="control.css" order="3" />
+      <!-- UNCOMMENT TO ADD MORE RESOURCES
+      <css path="css/AzureMapClust.css" order="1" />
+      <resx path="strings/AzureMapClust.1033.resx" version="1.0.0" />
+      -->
+    </resources>
+    <feature-usage>
+      <uses-feature name="Device.getCurrentPosition" required="true" />
+      <!--<uses-feature name="Device.captureAudio" required="true" />
+      <uses-feature name="Device.captureImage" required="true" />
+      <uses-feature name="Device.captureVideo" required="true" />
+      <uses-feature name="Device.getBarcodeValue" required="true" />
+    
+      <uses-feature name="Device.pickFile" required="true" />
+      <uses-feature name="Utility" required="true" />
+      <uses-feature name="WebAPI" required="true" />-->
+    </feature-usage>
+    
+  </control>
+</manifest>
