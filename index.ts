@@ -35,10 +35,7 @@ export class AzureMapCluststerSpider implements ComponentFramework.StandardContr
 
         let azMapKey = context.parameters.AzureMapsSubsctiptionKey.raw != null ? context.parameters.AzureMapsSubsctiptionKey.raw : "";
         let zoomParam: number = context.parameters.zoomName.raw ? context.parameters.zoomName.raw : 12;
-
-        let lat: number = 0;
-        let lng = 0;
-
+        
         /* Instantiate map to the div with id "map" */
         var map = new atlas.Map("map", {
             center: [-8.009480, 53.502850],
@@ -50,12 +47,25 @@ export class AzureMapCluststerSpider implements ComponentFramework.StandardContr
             }
         });
 
+        let lat: number = 0;
+        let lng = 0;
         //Get Users Current Location
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
                 lat = position.coords.latitude;
                 lng = position.coords.longitude;
                 map.setCamera({ center: [lng, lat], zoom: zoomParam });
+
+                map.events.add('ready', function () {
+                    //Create a data source and add it to the map.
+                    var dataSource = new atlas.source.DataSource();
+                    dataSource.add(new atlas.data.Point([lng, lat]));
+                    map.sources.add(dataSource);
+
+                    //Add the layer to the map.
+                    map.layers.add(new atlas.layer.SymbolLayer(dataSource, undefined, {iconOptions: {image: 'marker-red'}}));
+                });
+
             }, function () {
             });
         }
@@ -66,6 +76,7 @@ export class AzureMapCluststerSpider implements ComponentFramework.StandardContr
             ],
                 { position: atlas.ControlPosition.TopRight }
             );
+
         });
         this.map = map;
     }
@@ -94,8 +105,8 @@ export class AzureMapCluststerSpider implements ComponentFramework.StandardContr
             map.events.add('ready', function () {
                 popup = new atlas.Popup();
                 //Hide popup when user clicks or moves the map.
-                map.events.add('click', popup.close);
-                map.events.add('movestart', popup.close);
+                //map.events.add('click', popup.close);
+                //map.events.add('movestart', popup.close);
 
                 //Create a data source and add it to the map.
                 let dataSource = new atlas.source.DataSource(undefined, {
@@ -112,12 +123,13 @@ export class AzureMapCluststerSpider implements ComponentFramework.StandardContr
                     let primaryName = dataSet.records[currentRecordId].getFormattedValue(nameField);
                     let lat: number = dataSet.records[currentRecordId].getFormattedValue(latField) as any;
                     let lng: number = dataSet.records[currentRecordId].getFormattedValue(lngField) as any;
-
+                    if(lat != null && lng != null ){
                     dataSource.add(new atlas.data.Feature(new atlas.data.Point([lng, lat]), {
                         name: primaryName,
                         description: 'Open Record',
                         id: currentRecordId
                     }));
+                }
                 }
 
                 //Create a layer for rendering clustered data in the data source.
@@ -155,7 +167,7 @@ export class AzureMapCluststerSpider implements ComponentFramework.StandardContr
                 });
 
                 //Create the poput template
-                var entityName = context.parameters.dataSet.getTargetEntityType;
+                var entityName = context.parameters.dataSet.getTargetEntityType();
                 let popupTemplate = '<div class="customInfobox"><div class="customInfobox-inner">{name}</div><button class="button" onclick="Xrm.Navigation.openForm({\'entityName\':\'' + entityName + '\', \'entityId\': \'{recordId}\', \'openInNewWindow\': \'true\'})">Open Record</button></div>';
 
                 //Add a click event to the symbol layer.
@@ -417,7 +429,7 @@ class SpiderClusterManager {
     public dispose(): void {
         //Remove events.
         this._map.events.remove('click', this.hideSpiderCluster);
-        this._map.events.remove('movestart', this.hideSpiderCluster);
+        //this._map.events.remove('movestart', this.hideSpiderCluster);
         //@ts-ignore
         this._map.events.remove('click', this._clusterLayer, this._layerClickEvent);
         //@ts-ignore
